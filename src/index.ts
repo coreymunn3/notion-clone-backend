@@ -21,6 +21,12 @@ app.use(
 	})
 );
 
+app.get('/hello', async (c) =>
+	c.json({
+		message: 'Hello!',
+	})
+);
+
 app.post('/translate-document', async (c) => {
 	const body = await c.req.json();
 	const { documentData, sourceLanguage, targetLanguage } = body;
