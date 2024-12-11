@@ -23,13 +23,13 @@ app.use(
 
 app.post('/translate-document', async (c) => {
 	const body = await c.req.json();
-	const { documentData, targetLanguage } = body;
+	const { documentData, sourceLanguage, targetLanguage } = body;
 	// generate a summary of the doc
 	const summaryResponse = await c.env.AI.run('@cf/facebook/bart-large-cnn', { input_text: documentData, max_length: 1000 });
 	// translate the summary into another language
 	const translatedSummary = await c.env.AI.run('@cf/meta/m2m100-1.2b', {
 		text: summaryResponse.summary,
-		source_lang: 'english',
+		source_lang: sourceLanguage || 'english',
 		target_lang: targetLanguage,
 	});
 	return c.json({
