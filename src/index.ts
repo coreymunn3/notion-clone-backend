@@ -43,4 +43,36 @@ app.post('/translate-document', async (c) => {
 	});
 });
 
+/**
+ * Documentation and examples here https://github.com/openai/openai-node
+ */
+app.post('/chat-to-document', async (c) => {
+	const { documentData, question } = await c.req.json();
+	const openai = new OpenAI({
+		apiKey: c.env.OPEN_AI_KEY,
+	});
+
+	const chatCompletion = await openai.chat.completions.create({
+		messages: [
+			{
+				role: 'system',
+				content:
+					'You are an assistant helping the user to chat to a document. I am providing a JSON file of the markdown for that document. Using this, answer the users question in the clearest way possible, this document is about ' +
+					documentData,
+			},
+			{
+				role: 'user',
+				content: 'My question is: ' + question,
+			},
+		],
+		model: 'gpt-4o',
+		temperature: 0.5,
+	});
+
+	const resp = chatCompletion.choices[0].message.content;
+	return c.json({
+		message: resp,
+	});
+});
+
 export default app;
